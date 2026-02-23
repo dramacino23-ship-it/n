@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPS Invoice Generator</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.3);
+}
+
+h1 {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+label {
+    font-size: 13px;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.btn-generate {
+    background: #007bff;
+    color: white;
+}
+.btn-generate:hover {
+    background: #0056b3;
+}
+
+.btn-copy {
+    background: #28a745;
+    color: white;
+}
+.btn-copy:hover {
+    background: #1e7e34;
+}
+
+.output {
+    margin-top: 18px;
+    background: #0b0b0b;
+    color: #00ff9c;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    min-height: 140px;
+}
+
+.footer {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+}
+
+/* alert copied */
+.toast {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #28a745;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .3s;
+}
+.toast.show {
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>VPS Invoice Generator</h1>
+
+    <div class="form-group">
+        <label>Nama Toko</label>
+        <select id="toko">
+            <option value="acs">acs</option>
+            <option value="dcs">dcs</option>
+            <option value="acs wa">acs wa</option>
+            <option value="dcs wa">dcs wa</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Nama User</label>
+        <input type="text" id="user" placeholder="contoh: user1">
+    </div>
+
+    <div class="form-group">
+        <label>Jumlah Hari</label>
+        <input type="number" id="hari" placeholder="contoh: 30">
+    </div>
+
+    <div class="form-group">
+        <label>Sistem Operasi</label>
+        <select id="os">
+            <option value="linux">Linux</option>
+            <option value="windows">Windows</option>
+        </select>
+    </div>
+
+    <div class="actions">
+        <button class="btn-generate" onclick="generate()">Generate</button>
+        <button class="btn-copy" onclick="copyText()">Copy</button>
+    </div>
+
+    <div id="output" class="output"></div>
+
+    <div class="footer">Static • GitHub Pages Ready</div>
+</div>
+
+<div id="toast" class="toast">Copied!</div>
+
+<script>
+function pad(n) {
+    return n.toString().padStart(2, '0');
+}
+
+function formatExp(date) {
+    return `${pad(date.getDate())}-${pad(date.getMonth()+1)}-${date.getFullYear()}`;
+}
+
+function formatID(date) {
+    return `${pad(date.getDate())}${pad(date.getMonth()+1)}${date.getFullYear().toString().slice(2)}`;
+}
+
+function generate() {
+    const toko = document.getElementById("toko").value;
+    const user = document.getElementById("user").value.trim();
+    const hari = parseInt(document.getElementById("hari").value);
+    const os = document.getElementById("os").value;
+
+    if (!user || !hari || hari <= 0) {
+        alert("Nama user dan jumlah hari wajib diisi.");
+        return;
+    }
+
+    const exp = new Date();
+    exp.setDate(exp.getDate() + hari);
+
+    const invoiceID = `${formatID(exp)}-${user}-${toko}`;
+    const expired = formatExp(exp);
+
+    let text = "";
+
+    if (os === "linux") {
+        text =
+`${invoiceID}
+IP : 
+port : 
+user : root
+pass : 
+expired : ${expired}`;
+    } else {
+        text =
+`${invoiceID}
+IP : 
+user : Administrator
+pass : 
+expired : ${expired}`;
+    }
+
+    document.getElementById("output").textContent = text;
+}
+
+function copyText() {
+    const output = document.getElementById("output").textContent.trim();
+    if (!output) return;
+
+    navigator.clipboard.writeText(output).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 1500);
+    });
+}
+</script>
+
+</body>
+</html>
