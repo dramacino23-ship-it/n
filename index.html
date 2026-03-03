@@ -196,18 +196,8 @@ function generate() {
     const hari = parseInt(document.getElementById("hari").value);
     const os = document.getElementById("os").value;
 
-    // tambahan input
-    const ip = document.getElementById("ip")?.value.trim() || "";
-    const port = document.getElementById("port")?.value.trim() || "";
-    const pass = document.getElementById("pass")?.value.trim() || "";
-
     if (!user || !hari || hari <= 0) {
         alert("Nama user dan jumlah hari wajib diisi.");
-        return;
-    }
-
-    if (os === "linux" && (!ip || !port)) {
-        alert("IP dan Port wajib diisi untuk Linux.");
         return;
     }
 
@@ -222,18 +212,17 @@ function generate() {
     if (os === "linux") {
         text =
 `${invoiceID}
-${ip}
-port : ${port}
+
+port : 
 user : root
-pass : ${pass}
-ssh root@${ip} -p ${port}
+pass : 
 expired : ${expired}`;
     } else {
         text =
 `${invoiceID}
-${ip}
+
 user : Administrator
-pass : ${pass}
+pass : 
 expired : ${expired}`;
     }
 
@@ -255,8 +244,6 @@ function copyText() {
 </body>
 
 </html>
-
-
 
 
 
